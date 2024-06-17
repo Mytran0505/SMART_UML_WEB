@@ -1,0 +1,24 @@
+﻿@model SMART_UML_WEB.Models.InputText
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Test Text to ERD</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ProcessTextToERD" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="paragraph" class="control-label"></label>
+                <input asp-for="paragraph" class="form-control" />
+                <span asp-validation-for="paragraph" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Generate" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

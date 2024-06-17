@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using SMART_UML_WEB.Models;
 using System.Diagnostics;
+using SMART_UML_WEB.Models;
 
 namespace SMART_UML_WEB.Controllers
 {

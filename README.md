@@ -1,1 +1,0 @@
-# SMART_UML_WEB
