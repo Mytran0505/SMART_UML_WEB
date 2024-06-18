@@ -1,6 +1,6 @@
-﻿@model SMART_UML_WEB.Models.InputText
+﻿@model SMART_UML_WEB.Models.InputQuery
 @{
-    ViewBag.Title = "Generate ERD and DDL";
+    ViewBag.Title = "Generate Query";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,9 +10,9 @@
     <form id="queryForm">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="input-area">
-            <label asp-for="paragraph" class="control-label" for="instruction">Instruct AI</label>
-            <textarea asp-for="paragraph" class="form-control" id="instruction" placeholder="Tell AI what you want, e.g. get customers who signed up previous month and their purchases..."></textarea>
-            <span asp-validation-for="paragraph" class="text-danger"></span>
+            <label asp-for="question" class="control-label" for="instruction">Instruct AI</label>
+            <textarea asp-for="question" class="form-control" id="instruction" placeholder="Tell AI what you want, e.g. get customers who signed up previous month and their purchases..."></textarea>
+            <span asp-validation-for="question" class="text-danger"></span>
         </div>
         <div class="button-area">
             <button type="button" class="btn btn-primary" id="Generate">Generate query</button>
@@ -33,12 +33,12 @@
     <script>
         $(document).ready(function () {
             $('#Generate').click(function () {
-                var paragraph = $('#instruction').val();
+                var question = $('#instruction').val();
                 $.ajax({
-                    url: '@Url.Action("ProcessTextToERD", "TextToERD")', // Update with your controller name
+                    url: '@Url.Action("ProcessTextToSQL", "TextToSQL")', // Update with your controller name
                     type: 'POST',
                     data: {
-                        paragraph: paragraph
+                        question: question
                     },
                     success: function (result) {
                         $('#code').val(result);

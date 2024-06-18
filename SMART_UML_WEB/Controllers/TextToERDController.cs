@@ -29,9 +29,10 @@ namespace SMART_UML_WEB.Controllers
             var postWithBodyResponse = await client.PostAsync("process-paragraph", stringData);
 
             string result = await postWithBodyResponse.Content.ReadAsStringAsync();
-            TempData["result"] = result;
+            //TempData["result"] = result;
 
-            return RedirectToAction("TextToERDResult");
+            //return RedirectToAction("TextToERDResult");
+            return Json(result);
         }
 
         public IActionResult TextToERDResult()
