@@ -1,6 +1,13 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model string
+
+<form method="post" action="/TextToERD/GenerateUML">
+    <textarea name="umlText" rows="10" cols="50">@Model</textarea>
+    <br />
+    <button type="submit">Generate UML</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    <h2>Generated UML:</h2>
+    <img src="@Url.Action("GenerateUML", "TextToERD", new { umlText = Model })" alt="Generated UML" />
 }
-<p>@TempData["result"]</p>
