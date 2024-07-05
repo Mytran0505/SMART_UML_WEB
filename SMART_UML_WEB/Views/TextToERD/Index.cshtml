@@ -57,12 +57,7 @@
                         console.error(xhr.responseText);
                     }
                 });
-            });
-        });
 
-        $(document).ready(function () {
-            $('#Generate').click(function () {
-                var paragraph = $('#instruction').val();
                 $.ajax({
                     url: '@Url.Action("ProcessTextToDDL", "TextToERD")', // Update with your controller name
                     type: 'POST',
@@ -76,12 +71,7 @@
                         console.error(xhr.responseText);
                     }
                 });
-            });
-        });
 
-        $(document).ready(function () {
-            $('#Generate').click(function () {
-                var paragraph = $('#instruction').val();
                 $.ajax({
                     url: '@Url.Action("ProcessUMLTextToImage", "TextToERD")', // Update with your controller name
                     type: 'POST',
@@ -97,6 +87,7 @@
                         console.error(xhr.responseText);
                     }
                 });
+
             });
         });
 
@@ -112,6 +103,21 @@
                     success: function (umlTextInHexString) {
                         imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
                         $("#umlImage").attr('src', imageSrcValue);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+
+                $.ajax({
+                    url: '@Url.Action("ProcessPlantUMLInputTextToDDL", "TextToERD")', // Update with your controller name
+                    type: 'POST',
+                    data: {
+                        umlInputText: plantUMLValue
+                    },
+                    success: function (ddlResult) {
+                        $("#ddlResult").val(ddlResult);
+                        console.log(ddlResult);
                     },
                     error: function (xhr, status, error) {
                         console.error(xhr.responseText);
@@ -145,33 +151,4 @@
         });
 
     </script>
-
-@*     <script>
-
-        function generateImage() {
-            var umlText = document.getElementById('umlResult').value.trim();
-
-            var umlEncodeLink = toHex(umlText);
-
-            var imageUrl = `https://www.plantuml.com/plantuml/png/~h${umlEncodeLink}`;
-
-            var imageElement = document.getElementById('umlImage');
-            imageElement.src = imageUrl;
-
-            var imageContainer = document.getElementById('imageContainer');
-            imageContainer.style.display = 'block';
-
-            // Optional: Handle image load event to ensure it displays correctly
-            imageElement.onload = function () {
-                console.log('Image loaded successfully');
-            };
-
-            // Optional: Handle image error event
-            imageElement.onerror = function () {
-                console.error('Error loading image');
-                // Optionally, display an error message to the user
-                // alert('Error loading image. Please try again.');
-            };
-        }
-    </script> *@
 }
