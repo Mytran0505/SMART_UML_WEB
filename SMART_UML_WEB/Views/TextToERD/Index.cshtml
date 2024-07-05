@@ -21,16 +21,16 @@
     </form>
     <div class="output-area">
         <label for="umlResult">ERD script</label>
-        <textarea id="umlResult" readonly class="form-control"></textarea>
+        <textarea id="umlResult" class="form-control"></textarea>
     </div>
     <div class="output-area" id="imageContainer">
         <label for="umlImage">ERD image</label>
         <br />
-
+        <img id="umlImage" src="" />
     </div>
     <div class="output-area">
         <label for="ddlResult">DDL script</label>
-        <textarea id="ddlResult" readonly class="form-control"></textarea>
+        <textarea id="ddlResult" class="form-control"></textarea>
     </div>
     <div class="actions">
         <a href="#">Full</a>
@@ -89,7 +89,9 @@
                         paragraph: paragraph
                     },
                     success: function (umlTextInHexString) {
-                        $("#imageContainer").append('<img src="https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString + '"/>');
+                        //$("#imageContainer").append('<img src="https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString + '"/>');
+                        imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
+                        $("#umlImage").attr('src', imageSrcValue);
                     },
                     error: function (xhr, status, error) {
                         console.error(xhr.responseText);
@@ -97,9 +99,54 @@
                 });
             });
         });
+
+        $(document).ready(function () {
+            $("#umlResult").on('keyup', function () {
+                var plantUMLValue = $('#umlResult').val();
+                $.ajax({
+                    url: '@Url.Action("ProcessPlantUMLInputTextToImage", "TextToERD")', // Update with your controller name
+                    type: 'POST',
+                    data: {
+                        umlInputText: plantUMLValue
+                    },
+                    success: function (umlTextInHexString) {
+                        imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
+                        $("#umlImage").attr('src', imageSrcValue);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+
+        document.getElementById('umlResult').addEventListener('keydown', function (e) {
+            if (e.key == 'Tab') {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                // Set textarea value to: text before caret + tab + text after caret
+                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                // Put caret at the right position again
+                this.selectionStart = this.selectionEnd = start + 1;
+            }
+        });
+
+        document.getElementById('ddlResult').addEventListener('keydown', function (e) {
+            if (e.key == 'Tab') {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                // Set textarea value to: text before caret + tab + text after caret
+                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                // Put caret at the right position again
+                this.selectionStart = this.selectionEnd = start + 1;
+            }
+        });
+
     </script>
 
-    <script>
+@*     <script>
 
         function generateImage() {
             var umlText = document.getElementById('umlResult').value.trim();
@@ -126,5 +173,5 @@
                 // alert('Error loading image. Please try again.');
             };
         }
-    </script>
+    </script> *@
 }

@@ -37,9 +37,6 @@ namespace SMART_UML_WEB.Controllers
             var umlResult = JsonConvert.DeserializeObject<TextToERDResult>(result);
             var uml = umlResult.uml;
 
-            //TempData["result"] = result;
-
-            //return RedirectToAction("TextToERDResult");
             return Json(uml);
         }
 
@@ -65,9 +62,6 @@ namespace SMART_UML_WEB.Controllers
             var umlResult = JsonConvert.DeserializeObject<TextToERDResult>(result);
             var sql = umlResult.sql;
 
-            //TempData["result"] = result;
-
-            //return RedirectToAction("TextToERDResult");
             return Json(sql);
         }
 
@@ -93,6 +87,15 @@ namespace SMART_UML_WEB.Controllers
             var umlText = umlResult.uml;
 
             byte[] bytes = Encoding.UTF8.GetBytes(umlText);
+
+            string umlTextInHexString = Convert.ToHexString(bytes);
+
+            return Json(umlTextInHexString);
+        }
+
+        public async Task<IActionResult> ProcessPlantUMLInputTextToImage(string umlInputText)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(umlInputText);
 
             string umlTextInHexString = Convert.ToHexString(bytes);
 
