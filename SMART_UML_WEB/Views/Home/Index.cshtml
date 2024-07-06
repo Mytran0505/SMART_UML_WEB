@@ -1,19 +1,35 @@
 ﻿@{
-    ViewData["Title"] = "SQLAI.ai";
+    ViewData["Title"] = "SmartUML";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 
-<div class="main-content">
-    <h1>Hi, what would you like to do?</h1>
-    <div class="generate-buttons">
-        <a class="btn btn-outline-primary" asp-controller="TextToERD" asp-action="Index">
-            Generate ERD and DDL<br>
-            <small>Generate ERD and DDL for simplified database design and creation.</small>
-        </a>
-        <a class="btn btn-outline-secondary" asp-controller="TextToSQL" asp-action="Index">
-            Generate query<br>
-            <small>Convert everyday language to SQL queries effortlessly for seamless database interaction.</small>
-        </a>
+<div>
+    <div class="row container rounded" style="background: rgba(226, 234, 244, 0.9);">
+        <div class="col text-center">
+            <div class="text mx-5 my-4">
+                <h1 style="color: #2c91ff;">KHÓA LUẬN TỐT NGHIỆP</h1>
+            </div>
+            <div class="text mx-5 mb-4">
+                <h4>ĐỀ XUẤT CÁC PHƯƠNG PHÁP TỰ ĐỘNG HÓA THIẾT KẾ CƠ SỞ DỮ LIỆU VÀ SINH RA CÂU LỆNH TRUY VẤN TỪ MÔ TẢ BẰNG NGÔN NGỮ TỰ NHIÊN</h4>
+            </div>
+            <div class="text mx-5 mb-4">
+                <h4>PROPOSING METHODS TO AUTOMATICALLY DESIGN DATABASE AND GENERATE QUERY STATEMENT FROM NATURAL LANGUAGE DESCRIPTION</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="container rounded mt-5">
+        <h1>Xin chào, bạn đang cần gì?</h1>
+        <div class="generate-buttons">
+            <a class="btn btn-outline-primary" asp-controller="TextToERD" asp-action="Index">
+                <b style="color: #2c91ff;">Sinh ERD và DDL</b><br>
+                <small>Hỗ trợ sinh ERD và DDL cho thiết kế CSDL từ đoạn văn mô tả.</small>
+            </a>
+            <a class="btn btn-outline-primary" asp-controller="TextToSQL" asp-action="Index">
+                <b style="color: #2c91ff;">Sinh câu truy vấn</b><br>
+                <small>Hỗ trợ sinh câu truy vấn từ câu hỏi.</small>
+            </a>
+        </div>
     </div>
 </div>

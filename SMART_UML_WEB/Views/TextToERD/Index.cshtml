@@ -5,150 +5,266 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h1>Generate Query</h1>
-    <p>Turn text into queries. <a href="#">See FAQ</a></p>
+<div class="container rounded">
+    <h1>Sinh ERD và DDL</h1>
+    <p>Hỗ trợ sinh ERD và DDL cho thiết kế CSDL từ đoạn văn mô tả.</p>
     <form id="queryForm">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="input-area">
-            <label asp-for="paragraph" class="control-label" for="instruction">Instruct AI</label>
-            <textarea asp-for="paragraph" class="form-control" id="instruction" placeholder="Tell AI what you want, e.g. get customers who signed up previous month and their purchases..."></textarea>
+            <label asp-for="paragraph" class="control-label" for="instruction">Đoạn văn mô tả</label>
+            <textarea asp-for="paragraph" class="form-control" id="instruction" placeholder="Nhập đoạn văn mô tả cơ sở dữ liệu tại đây..."></textarea>
             <span asp-validation-for="paragraph" class="text-danger"></span>
         </div>
         <div class="button-area">
-            <button type="button" class="btn btn-primary" id="Generate">Generate query</button>
+            <button type="button" class="btn btn-primary" id="Generate">Sinh</button>
         </div>
     </form>
-    <div class="output-area">
-        <label for="umlResult">ERD script</label>
-        <textarea id="umlResult" class="form-control"></textarea>
+    <div class="output-area erdInputField">
+        <label for="umlResult">Mã PlantUML ERD</label>
+        
     </div>
-    <div class="output-area" id="imageContainer">
-        <label for="umlImage">ERD image</label>
+    <div class="output-area imageInputField" id="imageContainer">
+        <label for="umlImage">Ảnh ERD</label>
         <br />
-        <img id="umlImage" src="" />
+
     </div>
-    <div class="output-area">
-        <label for="ddlResult">DDL script</label>
-        <textarea id="ddlResult" class="form-control"></textarea>
+    <div class="output-area ddlInputField">
+        <label for="ddlResult">Câu DDL</label>
+
     </div>
-    <div class="actions">
-        <a href="#">Full</a>
-        <a href="#">Actions</a>
-    </div>
+    
+
+    
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        function erdCopyFunction() {
+            // Get the text field
+            var copyText = $("#umlResult").val();
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText);
+        }
+
+        function ddlCopyFunction() {
+            // Get the text field
+            var copyText = $("#ddlResult").val();
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText);
+        }
+
+        function imageSaveFunction() {
+            const canvas = document.getElementById('umlImage');
+
+            var dataURL = canvas.toDataURL();
+
+            // create a new anchor element to download the image
+            var link = document.createElement('a');
+            link.download = 'image.png';
+            link.href = dataURL;
+            document.body.appendChild(link);
+
+            // trigger a click event on the anchor to download the image
+            link.click();
+
+            // remove the anchor element from the DOM
+            document.body.removeChild(link);
+        }
+
         $(document).ready(function () {
             $('#Generate').click(function () {
+                // remove output field to append loading elements
+                $('#umlResult').remove();
+                $("#umlImage").remove();
+                $('#ddlResult').remove();
+                $('hr').remove();
+                $(".actions").remove();
+
+                // get input paragraph value
                 var paragraph = $('#instruction').val();
-                $.ajax({
-                    url: '@Url.Action("ProcessTextToUML", "TextToERD")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        paragraph: paragraph
-                    },
-                    success: function (uml) {
-                        $('#umlResult').val(uml);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
 
-                $.ajax({
-                    url: '@Url.Action("ProcessTextToDDL", "TextToERD")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        paragraph: paragraph
-                    },
-                    success: function (sql) {
-                        $('#ddlResult').val(sql);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+                // if paragraph is null or empty, alert message
+                if (paragraph == null || paragraph == '') {
+                    alert("Xin hãy nhập đoạn văn mô tả!");
+                }
 
-                $.ajax({
-                    url: '@Url.Action("ProcessUMLTextToImage", "TextToERD")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        paragraph: paragraph
-                    },
-                    success: function (umlTextInHexString) {
-                        //$("#imageContainer").append('<img src="https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString + '"/>');
-                        imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
-                        $("#umlImage").attr('src', imageSrcValue);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+                // if not, process the task
+                else {
+                    // append loading elements
+                    $(".erdInputField").append(`<div id="erdLoad" style="display: flex; justify-content: center;">
+                                                        <div class="typewriter text-center">
+                                                            <div class="slide"><i></i></div>
+                                                            <div class="paper"></div>
+                                                            <div class="keyboard"></div>
+                                                        </div>
+                                                    </div>`);
+                    $(".imageInputField").append(`<div id="imageLoad" style="display: flex; justify-content: center;">
+                                                        <div class="typewriter text-center">
+                                                            <div class="slide"><i></i></div>
+                                                            <div class="paper"></div>
+                                                            <div class="keyboard"></div>
+                                                        </div>
+                                                    </div>`);
+                    $(".ddlInputField").append(`<div id="ddlLoad" style="display: flex; justify-content: center;">
+                                                        <div class="typewriter text-center">
+                                                            <div class="slide"><i></i></div>
+                                                            <div class="paper"></div>
+                                                            <div class="keyboard"></div>
+                                                        </div>
+                                                    </div>`);
+                    
+                    // process text to uml
+                    $.ajax({
+                        url: '@Url.Action("ProcessTextToUML", "TextToERD")', // Update with your controller name
+                        type: 'POST',
+                        data: {
+                            paragraph: paragraph
+                        },
+                        success: function (uml) {
+                            $(".erdInputField").append(`<hr> <textarea id="umlResult" class="form-control"></textarea>`);
+                            $('#umlResult').val(uml);
+                            $('#erdLoad').remove();
+                            $(".erdInputField").append(`<div class="actions">
+                                                            <button type="button" class="btn btn-outline-secondary" onClick=erdCopyFunction()>Sao chép</button>
+                                                        </div>`);
 
+                            // add catchable edit event
+                            $("#umlResult").on('keyup', function () {
+
+                                var plantUMLValue = $('#umlResult').val();
+
+                                $.ajax({
+                                    url: '@Url.Action("ProcessPlantUMLInputTextToImage", "TextToERD")', // Update with your controller name
+                                    type: 'POST',
+                                    data: {
+                                        umlInputText: plantUMLValue
+                                    },
+                                    success: function (umlTextInHexString) {
+                                        imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
+                                        //$("#umlImage").attr('src', imageSrcValue);
+                                        const canvas = document.getElementById('umlImage');
+                                        context = canvas.getContext('2d');
+                                        base_image = new Image();
+                                        base_image.setAttribute('crossOrigin', 'anonymous');
+                                        base_image.src = imageSrcValue;
+                                        base_image.onload = function () {
+                                            canvas.width = base_image.width;
+                                            canvas.height = base_image.height;
+                                            context.drawImage(base_image, 0, 0);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error(xhr.responseText);
+                                    }
+                                });
+
+                                $.ajax({
+                                    url: '@Url.Action("ProcessPlantUMLInputTextToDDL", "TextToERD")', // Update with your controller name
+                                    type: 'POST',
+                                    data: {
+                                        umlInputText: plantUMLValue
+                                    },
+                                    success: function (ddlResult) {
+                                        $("#ddlResult").val(ddlResult);
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error(xhr.responseText);
+                                    }
+                                });
+                            });
+
+                            // allow tab in textarea
+                            document.getElementById('umlResult').addEventListener('keydown', function (e) {
+                                if (e.key == 'Tab') {
+                                    e.preventDefault();
+                                    var start = this.selectionStart;
+                                    var end = this.selectionEnd;
+                                    // Set textarea value to: text before caret + tab + text after caret
+                                    this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                                    // Put caret at the right position again
+                                    this.selectionStart = this.selectionEnd = start + 1;
+                                }
+                            });
+
+                            
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+
+                    // process text to image
+                    $.ajax({
+                        url: '@Url.Action("ProcessUMLTextToImage", "TextToERD")', // Update with your controller name
+                        type: 'POST',
+                        data: {
+                            paragraph: paragraph
+                        },
+                        success: function (umlTextInHexString) {
+                            imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
+                            //$(".imageInputField").append(`<hr> <img id="umlImage" src="" />`);
+                            //$("#umlImage").attr('src', imageSrcValue);
+                            $(".imageInputField").append(`<hr> <canvas id="umlImage" width="0" height="0"></canvas>`);
+                            const canvas = document.getElementById('umlImage');
+                            context = canvas.getContext('2d');
+                            base_image = new Image();
+                            base_image.setAttribute('crossOrigin', 'anonymous');
+                            base_image.src = imageSrcValue;
+                            base_image.onload = function () {
+                                canvas.width = base_image.width;
+                                canvas.height = base_image.height;
+                                context.drawImage(base_image, 0, 0);
+                            }
+                            $('#imageLoad').remove();
+                            $(".imageInputField").append(`<div class="actions">
+                                                                <button type="button" class="btn btn-outline-secondary" onClick="imageSaveFunction()">Lưu ảnh</button>
+                                                        </div>`);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+
+                    // process text to ddl
+                    $.ajax({
+                        url: '@Url.Action("ProcessTextToDDL", "TextToERD")', // Update with your controller name
+                        type: 'POST',
+                        data: {
+                            paragraph: paragraph
+                        },
+                        success: function (sql) {
+                            $(".ddlInputField").append(`<hr> <textarea id="ddlResult" class="form-control"></textarea>`);
+                            $('#ddlResult').val(sql);
+                            $('#ddlLoad').remove();
+                            $(".ddlInputField").append(`<div class="actions">
+                                                            <button type="button" class="btn btn-outline-secondary" onClick=ddlCopyFunction()>Sao chép</button>
+                                                        </div>`);
+
+                            // allow tab in textarea
+                            document.getElementById('ddlResult').addEventListener('keydown', function (e) {
+                                if (e.key == 'Tab') {
+                                    e.preventDefault();
+                                    var start = this.selectionStart;
+                                    var end = this.selectionEnd;
+                                    // Set textarea value to: text before caret + tab + text after caret
+                                    this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                                    // Put caret at the right position again
+                                    this.selectionStart = this.selectionEnd = start + 1;
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
             });
         });
 
-        $(document).ready(function () {
-            $("#umlResult").on('keyup', function () {
-                var plantUMLValue = $('#umlResult').val();
-                $.ajax({
-                    url: '@Url.Action("ProcessPlantUMLInputTextToImage", "TextToERD")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        umlInputText: plantUMLValue
-                    },
-                    success: function (umlTextInHexString) {
-                        imageSrcValue = 'https://www.plantuml.com/plantuml/png/~h' + umlTextInHexString;
-                        $("#umlImage").attr('src', imageSrcValue);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
-
-                $.ajax({
-                    url: '@Url.Action("ProcessPlantUMLInputTextToDDL", "TextToERD")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        umlInputText: plantUMLValue
-                    },
-                    success: function (ddlResult) {
-                        $("#ddlResult").val(ddlResult);
-                        console.log(ddlResult);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
-            });
-        });
-
-        document.getElementById('umlResult').addEventListener('keydown', function (e) {
-            if (e.key == 'Tab') {
-                e.preventDefault();
-                var start = this.selectionStart;
-                var end = this.selectionEnd;
-                // Set textarea value to: text before caret + tab + text after caret
-                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
-                // Put caret at the right position again
-                this.selectionStart = this.selectionEnd = start + 1;
-            }
-        });
-
-        document.getElementById('ddlResult').addEventListener('keydown', function (e) {
-            if (e.key == 'Tab') {
-                e.preventDefault();
-                var start = this.selectionStart;
-                var end = this.selectionEnd;
-                // Set textarea value to: text before caret + tab + text after caret
-                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
-                // Put caret at the right position again
-                this.selectionStart = this.selectionEnd = start + 1;
-            }
-        });
-
+        
     </script>
 }

@@ -4,49 +4,77 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h1>Generate Query</h1>
-    <p>Turn text into queries. <a href="#">See FAQ</a></p>
+<div class="container rounded">
+    <h1>Sinh câu truy vấn</h1>
+    <p>Hỗ trợ sinh câu truy vấn từ câu hỏi.</p>
     <form id="queryForm">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="input-area">
-            <label asp-for="question" class="control-label" for="instruction">Instruct AI</label>
-            <textarea asp-for="question" class="form-control" id="instruction" placeholder="Tell AI what you want, e.g. get customers who signed up previous month and their purchases..."></textarea>
+            <label asp-for="question" class="control-label" for="instruction">Câu hỏi</label>
+            <textarea asp-for="question" class="form-control" id="instruction" placeholder="Nhập câu hỏi cần truy vấn tại đây..."></textarea>
             <span asp-validation-for="question" class="text-danger"></span>
         </div>
         <div class="button-area">
-            <button type="button" class="btn btn-primary" id="Generate">Generate query</button>
+            <button type="button" class="btn btn-primary" id="Generate">Sinh</button>
         </div>
     </form>
-    <div class="output-area">
-        <label for="code">Code generation...</label>
-        <textarea id="code" readonly class="form-control"></textarea>
-    </div>
-    <div class="actions">
-        <a href="#">Full</a>
-        <a href="#">Actions</a>
+    <div class="output-area sqlInputField">
+        <label for="sqlResult">Câu SQL</label>
+        
     </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        function sqlCopyFunction() {
+            // Get the text field
+            var copyText = $("#sqlResult").val();
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText);
+        }
+
         $(document).ready(function () {
             $('#Generate').click(function () {
+                $('#sqlResult').remove();
+                $(".actions").remove();
+
                 var question = $('#instruction').val();
-                $.ajax({
-                    url: '@Url.Action("ProcessTextToSQL", "TextToSQL")', // Update with your controller name
-                    type: 'POST',
-                    data: {
-                        question: question
-                    },
-                    success: function (result) {
-                        $('#code').val(result);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+
+                if (question == null || question == '') {
+                    alert("Xin hãy nhập câu hỏi truy vấn!");
+                }
+
+                else {
+                    // append loading elements
+                    $(".sqlInputField").append(`<div id="sqlLoad" style="display: flex; justify-content: center;">
+                                                    <div class="typewriter text-center">
+                                                        <div class="slide"><i></i></div>
+                                                        <div class="paper"></div>
+                                                        <div class="keyboard"></div>
+                                                    </div>
+                                                </div>`);
+
+                    $.ajax({
+                        url: '@Url.Action("ProcessTextToSQL", "TextToSQL")', // Update with your controller name
+                        type: 'POST',
+                        data: {
+                            question: question
+                        },
+                        success: function (result) {
+                            $('#sqlLoad').remove();
+                            $(".sqlInputField").append(`<hr> <textarea id="sqlResult" class="form-control"></textarea>`);
+                            $('#sqlResult').val(result);
+                            $(".sqlInputField").append(`<div class="actions">
+                                                            <button type="button" class="btn btn-outline-secondary" onClick=sqlCopyFunction()>Sao chép</button>
+                                                        </div>`);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
             });
         });
     </script>
