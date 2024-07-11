@@ -32,12 +32,25 @@
             var copyText = $("#sqlResult").val();
 
             // Copy the text inside the text field
-            navigator.clipboard.writeText(copyText);
+            navigator.clipboard.writeText(copyText).then(function () {
+                // Show the tooltip
+                var tooltip = new bootstrap.Tooltip(document.getElementById('sqlCopyButton'), {
+                    title: 'Đã sao chép!',
+                    trigger: 'manual'
+                });
+                tooltip.show();
+
+                // Hide the tooltip after 1 second
+                setTimeout(function () {
+                    tooltip.hide();
+                }, 1000);
+            });
         }
 
         $(document).ready(function () {
             $('#Generate').click(function () {
                 $('#sqlResult').remove();
+                $('hr').remove();
                 $(".actions").remove();
 
                 var question = $('#instruction').val();
@@ -67,7 +80,7 @@
                             $(".sqlInputField").append(`<hr> <textarea id="sqlResult" class="form-control"></textarea>`);
                             $('#sqlResult').val(result);
                             $(".sqlInputField").append(`<div class="actions">
-                                                            <button type="button" class="btn btn-outline-secondary" onClick=sqlCopyFunction()>Sao chép</button>
+                                                            <button type="button" class="btn btn-outline-secondary" id="sqlCopyButton" onClick=sqlCopyFunction()>Sao chép</button>
                                                         </div>`);
                         },
                         error: function (xhr, status, error) {

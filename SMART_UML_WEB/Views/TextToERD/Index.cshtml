@@ -45,7 +45,19 @@
             var copyText = $("#umlResult").val();
 
             // Copy the text inside the text field
-            navigator.clipboard.writeText(copyText);
+            navigator.clipboard.writeText(copyText).then(function () {
+                // Show the tooltip
+                var tooltip = new bootstrap.Tooltip(document.getElementById('umlCopyButton'), {
+                    title: 'Đã sao chép!',
+                    trigger: 'manual'
+                });
+                tooltip.show();
+
+                // Hide the tooltip after 1 second
+                setTimeout(function () {
+                    tooltip.hide();
+                }, 1000);
+            });
         }
 
         function ddlCopyFunction() {
@@ -53,7 +65,19 @@
             var copyText = $("#ddlResult").val();
 
             // Copy the text inside the text field
-            navigator.clipboard.writeText(copyText);
+            navigator.clipboard.writeText(copyText).then(function () {
+                // Show the tooltip
+                var tooltip = new bootstrap.Tooltip(document.getElementById('ddlCopyButton'), {
+                    title: 'Đã sao chép!',
+                    trigger: 'manual'
+                });
+                tooltip.show();
+
+                // Hide the tooltip after 1 second
+                setTimeout(function () {
+                    tooltip.hide();
+                }, 1000);
+            });
         }
 
         function imageSaveFunction() {
@@ -128,7 +152,7 @@
                             $('#umlResult').val(uml);
                             $('#erdLoad').remove();
                             $(".erdInputField").append(`<div class="actions">
-                                                            <button type="button" class="btn btn-outline-secondary" onClick=erdCopyFunction()>Sao chép</button>
+                                                            <button type="button" class="btn btn-outline-secondary" id="umlCopyButton" onClick=erdCopyFunction()>Sao chép</button>
                                                         </div>`);
 
                             // add catchable edit event
@@ -241,7 +265,7 @@
                             $('#ddlResult').val(sql);
                             $('#ddlLoad').remove();
                             $(".ddlInputField").append(`<div class="actions">
-                                                            <button type="button" class="btn btn-outline-secondary" onClick=ddlCopyFunction()>Sao chép</button>
+                                                            <button type="button" class="btn btn-outline-secondary" id="ddlCopyButton" onClick=ddlCopyFunction()>Sao chép</button>
                                                         </div>`);
 
                             // allow tab in textarea
